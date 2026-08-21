@@ -7,7 +7,7 @@
 <title>Ei-Sekte — Official Hub</title>
 <meta name="description" content="Offizieller Hub der Ei-Sekte. Games, Leaderboards, Regelwerk und Projekte.">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 :root{--bg:#07080b;--surface:#0d0f14;--surface2:#12151c;--line:#20242d;--text:#f4f5f7;--muted:#8c929f;--gold:#e7b94f;--gold2:#ffda7a;--purple:#7657e8;--cyan:#4dd7e8}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;overflow-x:hidden}
 body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(800px 500px at 72% -5%,#6f4ad51b,transparent),radial-gradient(700px 500px at 15% 30%,#e7b94f0d,transparent)}
@@ -124,11 +124,21 @@ footer{border-top:1px solid var(--line);padding:38px 0 50px;color:#6e7480;font-s
 .access-note{margin-top:12px!important;font-size:11px!important;color:#606773!important}
 .logout-btn{cursor:pointer}
 
+
+.privacy-links{display:flex;gap:14px;flex-wrap:wrap;align-items:center}.privacy-links a,.privacy-links button{color:#9ca3af;background:none;border:0;padding:0;font:inherit;cursor:pointer}
+#privacyBanner{position:fixed;inset:0;z-index:120000;display:none;place-items:end center;background:#0009;padding:20px}#privacyBanner.show{display:grid}
+.privacy-box{width:min(760px,100%);border:1px solid #2b303a;background:#0d0f14f7;border-radius:16px;padding:22px;box-shadow:0 25px 80px #000c}
+.privacy-box h2{margin:0 0 9px;font-size:22px}.privacy-box p{margin:0;color:#9ca3af;font-size:13px;line-height:1.65}.privacy-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}
+.privacy-actions button,.privacy-actions a{padding:11px 14px;border-radius:9px;border:1px solid #303641;background:#12151c;color:#fff;font-weight:700;cursor:pointer}.privacy-actions .accept{background:#e7b94f;color:#171109;border-color:#e7b94f}
 </style>
 </head>
 <body>
 
-<div id="accessGate">
+<div id="privacyBanner" role="dialog" aria-modal="true" aria-labelledby="privacyTitle"><div class="privacy-box">
+<h2 id="privacyTitle">🥚 Datenschutz & Speicher-Einstellungen</h2>
+<p>Für den geschützten Zugang verwenden wir technisch notwendige lokale Speicherung. Mit deiner Zustimmung werden zusätzlich die Online-Bestenliste und Verbindungen zu Supabase aktiviert.</p>
+<div class="privacy-actions"><button id="privacyNecessary" type="button">Nur notwendige</button><button id="privacyAccept" class="accept" type="button">Akzeptieren</button><a href="datenschutz.html">Datenschutzerklärung</a></div>
+</div></div><div id="accessGate">
   <div class="access-box">
     <div class="access-egg"></div>
     <div class="eyebrow">Ei-Sekte · Restricted Access</div>
@@ -206,7 +216,7 @@ Discord beitreten
 <article class="panel dev"><div class="avatar">&lt;/&gt;</div><div><small>Website & Game Development</small><h3>Noah</h3><p>Developer · Website & Projekte der Ei-Sekte</p></div><span class="role">DEVELOPER</span></article></section>
 </main>
 
-<footer><div class="shell foot"><div><b>EI-SEKTE</b> · Official Hub</div><div>Gegründet 21.08.2026 · Ehre dem Ei.</div></div></footer>
+<footer><div class="shell foot"><div><b>EI-SEKTE</b> · Official Hub</div><div class="privacy-links"><span>Gegründet 21.08.2026 · Ehre dem Ei.</span><a href="datenschutz.html">Datenschutz</a><button id="privacySettings" type="button">Datenschutz-Einstellungen</button></div></div></footer>
 
 <script>
 (() => {
@@ -276,7 +286,8 @@ Discord beitreten
     loadBoard(tab.dataset.diff);
   }));
 
-  loadBoard('normal');
+  window.reloadEiBoard=()=>loadBoard(document.querySelector('.board-tab.active')?.dataset.diff||'normal');
+   loadBoard('normal');
 })();
 </script>
 
@@ -322,5 +333,14 @@ Discord beitreten
 })();
 </script>
 
-</body>
+<script>
+(()=>{const KEY='eiPrivacyChoice',b=document.getElementById('privacyBanner');
+const get=()=>{try{return localStorage.getItem(KEY)}catch(e){return null}};
+const save=v=>{try{localStorage.setItem(KEY,v)}catch(e){};b?.classList.remove('show');if(v==='all')window.reloadEiBoard?.()};
+document.getElementById('privacyNecessary')?.addEventListener('click',()=>save('necessary'));
+document.getElementById('privacyAccept')?.addEventListener('click',()=>save('all'));
+document.getElementById('privacySettings')?.addEventListener('click',()=>b?.classList.add('show'));
+if(!get())b?.classList.add('show');
+})();
+</script></body>
 </html>
