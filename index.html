@@ -71,6 +71,27 @@ footer{border-top:1px solid var(--line);padding:38px 0 50px;color:#6e7480;font-s
   fill:currentColor;
 }
 
+
+/* Live Hall of Eggs */
+.leaderboard-card{padding:30px}
+.board-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.board-head h3{margin:8px 0 0;font:600 25px "Space Grotesk"}
+.board-tabs{display:flex;gap:7px;flex-wrap:wrap}
+.board-tab{border:1px solid var(--line);background:#0d0f14;color:#9298a4;padding:8px 11px;border-radius:8px;font:700 11px Inter;cursor:pointer}
+.board-tab:hover{border-color:#454b58;color:#fff}
+.board-tab.active{background:#e7b94f;color:#171109;border-color:#e7b94f}
+.board-status{color:var(--muted);font-size:13px;padding:16px 0}
+.board-list{display:grid;gap:8px}
+.board-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:10px;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:#ffffff03}
+.board-rank{font:700 15px "Space Grotesk";color:#8d949f}
+.board-row:nth-child(1) .board-rank{color:#ffd76a}
+.board-row:nth-child(2) .board-rank{color:#d8dde7}
+.board-row:nth-child(3) .board-rank{color:#d99b65}
+.board-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board-height{font:700 14px "Space Grotesk";color:var(--gold2)}
+.board-foot{margin-top:14px;color:#737a86;font-size:11px}
+@media(max-width:600px){.board-head{display:block}.board-tabs{margin-top:16px}.leaderboard-card{padding:22px}.board-row{grid-template-columns:34px minmax(0,1fr) auto}}
+
 </style>
 </head>
 <body>
@@ -117,7 +138,18 @@ Discord beitreten
 </div></section>
 
 <section id="community"><div class="sectiontop"><div><div class="eyebrow">Community</div><h2>Mehr als ein Game.</h2></div><p>Die Seite soll langfristig das Zuhause für eure Spiele, Bestenlisten, Updates und die Geschichte der Gruppe werden.</p></div>
-<div class="columns"><article class="panel info"><div class="eyebrow">Hall of Eggs</div><h3>Globale Bestenlisten</h3><p>Ei Ascension kann später direkt hier mit Supabase verbunden werden. Dadurch erscheinen die besten Runs automatisch auf der Website.</p></article><article class="panel info"><div class="eyebrow">Development</div><h3>Updates & Changelog</h3><p>Neue Maps, Skins, Mechaniken und zukünftige Games können hier als richtige Patch Notes veröffentlicht werden.</p></article></div></section>
+<div class="columns"><article class="panel leaderboard-card">
+<div class="board-head">
+  <div><div class="eyebrow">Hall of Eggs · Live</div><h3>Globale Bestenliste</h3></div>
+  <div class="board-tabs" aria-label="Schwierigkeit">
+    <button class="board-tab active" data-diff="normal">Normal</button>
+    <button class="board-tab" data-diff="hard">Hart</button>
+    <button class="board-tab" data-diff="insane">Ei-nsane</button>
+  </div>
+</div>
+<div id="hubLeaderboard" class="board-status">🌐 Lade Bestenliste …</div>
+<div class="board-foot">Ei Ascension · Die besten 10 Spieler pro Schwierigkeit</div>
+</article><article class="panel info"><div class="eyebrow">Development</div><h3>Updates & Changelog</h3><p>Neue Maps, Skins, Mechaniken und zukünftige Games können hier als richtige Patch Notes veröffentlicht werden.</p></article></div></section>
 
 <section id="regeln"><div class="sectiontop"><div><div class="eyebrow">Der Kodex</div><h2>Taten vor Worten.</h2></div><p>Ränge bedeuten Verantwortung, nicht persönlichen Wert. Spaß gehört dazu – die Grenze bestimmt die Person selbst.</p></div>
 <article class="panel info"><div class="rulelist"><div class="rule"><div class="num">01</div><div><b>Das Ei ist heilig.</b><span>Das Zentrum der vollkommen seriösen Ei-Organisation.</span></div></div><div class="rule"><div class="num">02</div><div><b>Alle bleiben gleich viel wert.</b><span>Ein Rang gibt Aufgaben oder Verantwortung, macht aber niemanden wichtiger.</span></div></div><div class="rule"><div class="num">03</div><div><b>Spaß darf chaotisch sein.</b><span>Fitna, Sprüche und gegenseitiges Necken gehören dazu, solange alle Beteiligten damit klarkommen.</span></div></div><div class="rule"><div class="num">04</div><div><b>Eine klare Grenze wird respektiert.</b><span>Wenn jemand ausdrücklich sagt, dass etwas aufhören soll, hört es auf.</span></div></div></div></article></section>
@@ -127,5 +159,78 @@ Discord beitreten
 </main>
 
 <footer><div class="shell foot"><div><b>EI-SEKTE</b> · Official Hub</div><div>Gegründet 21.08.2026 · Ehre dem Ei.</div></div></footer>
+
+<script>
+(() => {
+  const SUPABASE_URL = 'https://yvizoyguzcqxpwzazdru.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_31sAcnmmIKsCSNFJ2f_pLQ_eW7eLCzL';
+  const board = document.getElementById('hubLeaderboard');
+  const tabs = [...document.querySelectorAll('.board-tab')];
+
+  const esc = (value) => String(value ?? '').replace(/[<>&"']/g, c => ({
+    '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'
+  }[c]));
+
+  async function loadBoard(diff='normal'){
+    if(!board) return;
+    board.className = 'board-status';
+    board.innerHTML = '🌐 Lade Bestenliste …';
+    try{
+      const path = '/rest/v1/leaderboard?select=player_name,height,difficulty,created_at'
+        + '&difficulty=eq.' + encodeURIComponent(diff)
+        + '&order=height.desc&limit=100';
+      const response = await fetch(SUPABASE_URL + path, {
+        headers:{
+          apikey: SUPABASE_KEY,
+          Authorization: 'Bearer ' + SUPABASE_KEY
+        }
+      });
+      if(!response.ok) throw new Error(await response.text());
+      const rows = await response.json();
+
+      const seen = new Set();
+      const best = [];
+      for(const row of rows || []){
+        const name = String(row.player_name || 'Ei-Pilot').trim();
+        const key = name.toLowerCase();
+        if(seen.has(key)) continue;
+        seen.add(key);
+        best.push({...row, player_name:name});
+        if(best.length >= 10) break;
+      }
+
+      if(!best.length){
+        board.className = 'board-status';
+        board.textContent = 'Noch keine Online-Runs auf dieser Schwierigkeit.';
+        return;
+      }
+
+      board.className = 'board-list';
+      board.innerHTML = best.map((row,i) => {
+        const rank = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : '#' + (i+1);
+        const height = Math.max(0, Number(row.height) || 0).toLocaleString('de-DE');
+        return `<div class="board-row">
+          <div class="board-rank">${rank}</div>
+          <div class="board-name">${esc(row.player_name)}</div>
+          <div class="board-height">${height} m</div>
+        </div>`;
+      }).join('');
+    }catch(err){
+      console.error('Hall of Eggs:', err);
+      board.className = 'board-status';
+      board.textContent = '⚠️ Bestenliste konnte gerade nicht geladen werden.';
+    }
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    loadBoard(tab.dataset.diff);
+  }));
+
+  loadBoard('normal');
+})();
+</script>
+
 </body>
 </html>
