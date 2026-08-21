@@ -92,10 +92,58 @@ footer{border-top:1px solid var(--line);padding:38px 0 50px;color:#6e7480;font-s
 .board-foot{margin-top:14px;color:#737a86;font-size:11px}
 @media(max-width:600px){.board-head{display:block}.board-tabs{margin-top:16px}.leaderboard-card{padding:22px}.board-row{grid-template-columns:34px minmax(0,1fr) auto}}
 
+
+/* Ei-Sekte Zugang */
+#accessGate{
+  position:fixed;inset:0;z-index:99999;display:grid;place-items:center;
+  background:
+    radial-gradient(700px 420px at 50% 20%,#7657e826,transparent 65%),
+    radial-gradient(600px 380px at 25% 85%,#e7b94f16,transparent 65%),
+    #07080b;
+  padding:24px;
+}
+#accessGate.unlocked{display:none}
+.access-box{
+  width:min(440px,100%);padding:34px;border:1px solid #2a2f39;border-radius:18px;
+  background:#0d0f14eF;box-shadow:0 30px 90px #000b;text-align:center;
+}
+.access-egg{
+  width:62px;height:78px;margin:0 auto 20px;border-radius:50% 50% 46% 46%/58% 58% 42% 42%;
+  background:linear-gradient(145deg,#fff0b6,#d49b31);box-shadow:0 0 35px #e7b94f25;
+}
+.access-box .eyebrow{margin-bottom:8px}
+.access-box h2{font:700 32px "Space Grotesk";margin:0 0 10px}
+.access-box p{color:#8c929f;font-size:14px;line-height:1.6;margin:0 0 22px}
+.access-input{
+  width:100%;padding:14px 15px;border:1px solid #292e38;border-radius:10px;
+  background:#080a0e;color:#fff;font:600 15px Inter;outline:none;
+}
+.access-input:focus{border-color:#e7b94f}
+.access-submit{width:100%;justify-content:center;margin-top:11px;cursor:pointer}
+.access-error{min-height:20px;margin-top:12px;color:#ff7f7f;font-size:12px;font-weight:700}
+.access-note{margin-top:12px!important;font-size:11px!important;color:#606773!important}
+.logout-btn{cursor:pointer}
+
 </style>
 </head>
 <body>
-<nav><div class="shell navin"><a class="brand" href="#"><span class="brandmark"></span> EI-SEKTE</a><div class="navlinks"><a href="#projekte">Projekte</a><a href="#markt">Ei-Markt</a><a href="#games">Games</a><a href="#community">Community</a><a href="#regeln">Kodex</a><a href="#team">Team</a></div><div class="status"><span class="dot"></span>Hub online</div></div></nav>
+
+<div id="accessGate">
+  <div class="access-box">
+    <div class="access-egg"></div>
+    <div class="eyebrow">Ei-Sekte · Restricted Access</div>
+    <h2>ZUGANG ERFORDERLICH</h2>
+    <p>Dieser Bereich ist nur für Mitglieder der Ei-Sekte freigeschaltet.</p>
+    <form id="accessForm">
+      <input id="accessCode" class="access-input" type="password" autocomplete="current-password" placeholder="Zugangscode eingeben" aria-label="Zugangscode">
+      <button class="button primary access-submit" type="submit">Zugang freischalten →</button>
+    </form>
+    <div id="accessError" class="access-error"></div>
+    <p class="access-note">Der Zugang bleibt auf diesem Gerät gespeichert.</p>
+  </div>
+</div>
+
+<nav><div class="shell navin"><a class="brand" href="#"><span class="brandmark"></span> EI-SEKTE</a><div class="navlinks"><a href="#projekte">Projekte</a><a href="#markt">Ei-Markt</a><a href="#games">Games</a><a href="#community">Community</a><a href="#regeln">Kodex</a><a href="#team">Team</a></div><div style="display:flex;align-items:center;gap:8px"><div class="status"><span class="dot"></span>Hub online</div><button id="logoutBtn" class="status logout-btn" type="button">Logout</button></div></div></nav>
 
 <header class="shell hero">
 <div>
@@ -229,6 +277,48 @@ Discord beitreten
   }));
 
   loadBoard('normal');
+})();
+</script>
+
+
+<script>
+(() => {
+  const ACCESS_CODE = '123HochLebeDasEi';
+  const STORAGE_KEY = 'eiSekteAccess';
+  const gate = document.getElementById('accessGate');
+  const form = document.getElementById('accessForm');
+  const input = document.getElementById('accessCode');
+  const error = document.getElementById('accessError');
+  const logout = document.getElementById('logoutBtn');
+
+  function isUnlocked(){
+    try{return localStorage.getItem(STORAGE_KEY)==='granted'}catch(e){return false}
+  }
+  function unlock(){
+    try{localStorage.setItem(STORAGE_KEY,'granted')}catch(e){}
+    gate?.classList.add('unlocked');
+  }
+  function lock(){
+    try{localStorage.removeItem(STORAGE_KEY)}catch(e){}
+    gate?.classList.remove('unlocked');
+    if(input){input.value='';setTimeout(()=>input.focus(),0)}
+  }
+
+  if(isUnlocked()) gate?.classList.add('unlocked');
+  else setTimeout(()=>input?.focus(),0);
+
+  form?.addEventListener('submit', e => {
+    e.preventDefault();
+    if(input.value === ACCESS_CODE){
+      error.textContent='';
+      unlock();
+    }else{
+      error.textContent='Zugang verweigert · falscher Code';
+      input.select();
+    }
+  });
+
+  logout?.addEventListener('click', lock);
 })();
 </script>
 
