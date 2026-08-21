@@ -37,6 +37,23 @@ footer{border-top:1px solid var(--line);padding:38px 0 50px;color:#6e7480;font-s
 .eggshelf{height:240px;display:flex;align-items:center;justify-content:center;gap:20px;position:relative}.eggshelf:after{content:"";position:absolute;left:10%;right:10%;bottom:34px;height:10px;background:#252a33;border-radius:4px;box-shadow:0 15px 35px #000}.miniEgg{position:relative;z-index:1;width:70px;height:92px;border-radius:50% 50% 45% 45%/58% 58% 42% 42%;box-shadow:0 18px 30px #0009}.miniEgg.common{background:radial-gradient(circle at 35% 25%,#fff8d8,#d7b874 60%,#806032)}.miniEgg.rare{width:82px;height:108px;background:radial-gradient(circle at 35% 25%,#eee8ff,#9d7aff 55%,#44278e);box-shadow:0 0 35px #7657e844,0 18px 30px #0009}.miniEgg.legendary{background:radial-gradient(circle at 35% 25%,#fff9d2,#ffc857 50%,#9b561e);box-shadow:0 0 40px #e7b94f44,0 18px 30px #0009}
 
 @media(max-width:800px){.gridhub,.market{grid-template-columns:1fr}.eggshelf{height:180px}}
+
+/* Click-sichere Beta-Schaltfläche */
+.featured::before,
+.featured .mountain {
+  pointer-events: none !important;
+}
+.featured .actions {
+  position: relative !important;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+}
+#play-beta {
+  position: relative !important;
+  z-index: 101 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
 </style>
 </head>
 <body>
@@ -70,7 +87,10 @@ footer{border-top:1px solid var(--line);padding:38px 0 50px;color:#6e7480;font-s
 
 <section id="games"><div class="sectiontop"><div><div class="eyebrow">Ei Arcade</div><h2>Unsere Games.</h2></div><p>Games sind ein Teil des Hubs. Hier entstehen Ei Ascension und später weitere kleine und größere Ei-Projekte.</p></div>
 <div class="games">
-<article class="panel featured"><div class="mountain"></div><span class="badge">BETA · JETZT SPIELBAR</span><h3>Ei Ascension</h3><p>Ein Aufstieg bis 100.000 Meter. Verschiedene Welten, Spezialplattformen, Jetpack-Zonen, Skins und Online-Rekorde.</p><div class="actions"><a class="button primary" href="./ei-ascension.html" style="position:relative;z-index:5;pointer-events:auto">Beta spielen →</a><a class="button" href="games.html">Zur Ei Arcade →</a></div></article>
+<article class="panel featured"><div class="mountain"></div><span class="badge">BETA · JETZT SPIELBAR</span><h3>Ei Ascension</h3><p>Ein Aufstieg bis 100.000 Meter. Verschiedene Welten, Spezialplattformen, Jetpack-Zonen, Skins und Online-Rekorde.</p><div class="actions"><a id="play-beta" class="button primary" href="./ei-ascension.html"
+       onclick="window.location.href='./ei-ascension.html'; return false;">
+      Beta spielen →
+    </a><a class="button" href="games.html">Zur Ei Arcade →</a></div></article>
 <div class="sidegames"><article class="panel smallgame"><span class="coming">NEXT PROJECT</span><h3>Projekt #02</h3><p>Der nächste Eintrag in das Ei-Universum.</p></article><article class="panel smallgame"><span class="coming">CONCEPT</span><h3>Projekt #03</h3><p>Noch streng geheime Ei-Technologie.</p></article></div>
 </div></section>
 
