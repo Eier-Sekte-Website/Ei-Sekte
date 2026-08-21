@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Games | Ei-Sekte</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #07080b;
+      --panel: #0e1016;
+      --panel2: #13161e;
+      --border: #242832;
+      --text: #f5f5f7;
+      --muted: #9298a4;
+      --gold: #f0c45b;
+      --purple: #8a67ff;
+      --green: #58db91;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 75% 10%, rgba(120, 84, 255, 0.12), transparent 30%),
+        radial-gradient(circle at 15% 40%, rgba(240, 196, 91, 0.07), transparent 25%),
+        var(--bg);
+
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* Hintergrund-Raster */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+
+      background-size: 60px 60px;
+      mask-image: linear-gradient(to bottom, black, transparent 80%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1150px, calc(100% - 40px));
+      margin: auto;
+    }
+
+    /* NAVIGATION */
+
+    nav {
+      height: 75px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7, 8, 11, 0.88);
+      backdrop-filter: blur(16px);
+
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .nav-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .egg-logo {
+      width: 31px;
+      height: 38px;
+
+      border-radius: 50% 50% 45% 45% / 58% 58% 42% 42%;
+
+      background:
+        radial-gradient(
+          circle at 35% 25%,
+          #fff7d7,
+          #e8bd59 60%,
+          #986d27
+        );
+    }
+
+    .back {
+      color: var(--muted);
+      font-size: 14px;
+
+      padding: 10px 14px;
+
+      border: 1px solid var(--border);
+      border-radius: 9px;
+
+      transition: 0.2s;
+    }
+
+    .back:hover {
+      color: white;
+      border-color: #505766;
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* HEADER */
+
+    header {
+      padding: 90px 0 65px;
+    }
+
+    .label {
+      color: var(--gold);
+
+      font-size: 11px;
+      font-weight: 800;
+
+      letter-spacing: 2px;
+      text-transform: uppercase;
+
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 78px);
+      letter-spacing: -4px;
+      line-height: 0.95;
+
+      margin-bottom: 22px;
+    }
+
+    .intro {
+      max-width: 650px;
+
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    /* GAME SECTION */
+
+    .games {
+      padding-bottom: 100px;
+    }
+
+    .featured-game {
+      position: relative;
+
+      min-height: 440px;
+
+      padding: 42px;
+
+      border: 1px solid var(--border);
+      border-radius: 20px;
+
+      background:
+        radial-gradient(
+          circle at 80% 35%,
+          rgba(138,103,255,0.20),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #141721,
+          #0c0e13
+        );
+
+      overflow: hidden;
+
+      display: flex;
+      align-items: end;
+    }
+
+    /* Berge im Hintergrund */
+
+    .mountains {
+      position: absolute;
+      right: -30px;
+      bottom: 0;
+
+      width: 55%;
+      height: 85%;
+
+      opacity: 0.7;
+    }
+
+    .mountain-one {
+      position: absolute;
+      bottom: 0;
+      right: 50px;
+
+      width: 300px;
+      height: 310px;
+
+      background: #292e3a;
+
+      clip-path: polygon(
+        50% 0,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .mountain-two {
+      position: absolute;
+      bottom: 0;
+      right: 270px;
+
+      width: 220px;
+      height: 220px;
+
+      background: #20242d;
+
+      clip-path: polygon(
+        50% 0,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .game-content {
+      position: relative;
+      z-index: 2;
+
+      max-width: 620px;
+    }
+
+    .status {
+      display: inline-block;
+
+      padding: 7px 10px;
+
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 7px;
+
+      color: #c4c8d0;
+
+      font-size: 10px;
+      font-weight: 800;
+
+      letter-spacing: 1.3px;
+
+      margin-bottom: 18px;
+    }
+
+    .featured-game h2 {
+      font-size: clamp(36px, 5vw, 53px);
+
+      letter-spacing: -2px;
+
+      margin-bottom: 12px;
+    }
+
+    .featured-game p {
+      color: var(--muted);
+
+      line-height: 1.7;
+
+      max-width: 570px;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      margin-top: 22px;
+    }
+
+    .feature {
+      padding: 7px 10px;
+
+      border-radius: 7px;
+      border: 1px solid var(--border);
+
+      background: rgba(255,255,255,0.025);
+
+      color: #aeb4be;
+
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+
+      margin-top: 27px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+
+      padding: 13px 18px;
+
+      border-radius: 9px;
+      border: 1px solid var(--border);
+
+      font-size: 14px;
+      font-weight: 700;
+
+      transition: 0.2s;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary {
+      color: #1d1608;
+
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .primary:hover {
+      background: #ffda7c;
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.03);
+      color: #aeb4bd;
+    }
+
+    /* WEITERE GAMES */
+
+    .more-title {
+      margin-top: 70px;
+      margin-bottom: 24px;
+
+      font-size: 27px;
+      letter-spacing: -1px;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .game-card {
+      min-height: 230px;
+
+      padding: 25px;
+
+      border: 1px solid var(--border);
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          145deg,
+          var(--panel2),
+          var(--panel)
+        );
+
+      transition: 0.2s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: #414754;
+    }
+
+    .coming {
+      color: #777e89;
+
+      font-size: 10px;
+      font-weight: 800;
+
+      letter-spacing: 1.4px;
+    }
+
+    .game-card h3 {
+      margin-top: 75px;
+      margin-bottom: 8px;
+
+      font-size: 21px;
+    }
+
+    .game-card p {
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* INFO */
+
+    .info {
+      margin-top: 70px;
+
+      padding: 27px;
+
+      border-left: 3px solid var(--gold);
+
+      background: rgba(255,255,255,0.025);
+
+      border-radius: 0 12px 12px 0;
+    }
+
+    .info strong {
+      display: block;
+      margin-bottom: 7px;
+    }
+
+    .info p {
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    footer {
+      padding: 35px 0;
+
+      border-top: 1px solid var(--border);
+
+      color: #666d78;
+      font-size: 12px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 750px) {
+
+      header {
+        padding-top: 65px;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .featured-game {
+        padding: 28px;
+        min-height: 500px;
+      }
+
+      .mountains {
+        width: 90%;
+        opacity: 0.35;
+      }
+
+      .game-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        display: block;
+        line-height: 2;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <div class="container nav-inner">
+
+    <a href="index.html" class="brand">
+      <span class="egg-logo"></span>
+      EI-SEKTE
+    </a>
+
+    <a href="index.html" class="back">
+      ← Zurück zum Hub
+    </a>
+
+  </div>
+</nav>
+
+
+<header class="container">
+
+  <div class="label">
+    Ei Arcade
+  </div>
+
+  <h1>
+    UNSERE GAMES.
+  </h1>
+
+  <p class="intro">
+    Willkommen in der Ei Arcade. Hier findest du alle Spiele,
+    die innerhalb der Ei-Sekte entstehen. Neue Games,
+    Herausforderungen und Projekte werden später automatisch
+    hier ergänzt.
+  </p>
+
+</header>
+
+
+<main class="container games">
+
+  <!-- EI ASCENSION -->
+
+  <section class="featured-game">
+
+    <div class="mountains">
+
+      <div class="mountain-one"></div>
+      <div class="mountain-two"></div>
+
+    </div>
+
+    <div class="game-content">
+
+      <span class="status">
+        FLAGSHIP GAME
+      </span>
+
+      <h2>
+        Ei Ascension
+      </h2>
+
+      <p>
+        Steige mit deinem Ei so hoch wie möglich.
+        Verschiedene Welten, bewegliche Plattformen,
+        Jetpacks, Spezialzonen, Skins und eine
+        Online-Bestenliste warten auf dich.
+      </p>
+
+      <div class="features">
+
+        <span class="feature">
+          Bis 100.000 m
+        </span>
+
+        <span class="feature">
+          Online Leaderboard
+        </span>
+
+        <span class="feature">
+          Verschiedene Maps
+        </span>
+
+        <span class="feature">
+          Ei-Skins
+        </span>
+
+        <span class="feature">
+          Jetpack-Zonen
+        </span>
+
+      </div>
+
+
+      <div class="buttons">
+
+        <!--
+        DIESEN LINK ÄNDERN WIR SPÄTER,
+        WENN EI ASCENSION HOCHGELADEN WURDE.
+        -->
+
+        <a
+          href="#"
+          onclick="alert('Ei Ascension wird bald mit der Website verbunden.'); return false;"
+          class="button primary"
+        >
+          Spiel starten →
+        </a>
+
+        <span class="button secondary">
+          In Entwicklung
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ZUKÜNFTIGE SPIELE -->
+
+  <h2 class="more-title">
+    Weitere Games
+  </h2>
+
+
+  <section class="game-grid">
+
+    <article class="game-card">
+
+      <span class="coming">
+        COMING SOON
+      </span>
+
+      <h3>
+        Projekt #02
+      </h3>
+
+      <p>
+        Ein zukünftiges Game der Ei-Sekte.
+      </p>
+
+    </article>
+
+
+    <article class="game-card">
+
+      <span class="coming">
+        CONCEPT
+      </span>
+
+      <h3>
+        Projekt #03
+      </h3>
+
+      <p>
+        Noch streng geheime Ei-Technologie.
+      </p>
+
+    </article>
+
+
+    <article class="game-card">
+
+      <span class="coming">
+        FUTURE PROJECT
+      </span>
+
+      <h3>
+        Noch frei
+      </h3>
+
+      <p>
+        Platz für ein weiteres zukünftiges Spiel.
+      </p>
+
+    </article>
+
+  </section>
+
+
+  <div class="info">
+
+    <strong>
+      Die Ei Arcade befindet sich im Aufbau.
+    </strong>
+
+    <p>
+      Ei Ascension wird im nächsten Schritt direkt mit dieser
+      Seite verbunden. Danach kannst du das Spiel über
+      „Spiel starten“ öffnen, ohne die Ei-Sekten-Website
+      verlassen zu müssen.
+    </p>
+
+  </div>
+
+</main>
+
+
+<footer>
+
+  <div class="container footer-inner">
+
+    <span>
+      EI-SEKTE · Ei Arcade
+    </span>
+
+    <span>
+      Developer: Noah · 2026
+    </span>
+
+  </div>
+
+</footer>
+
+
+</body>
+</html>
